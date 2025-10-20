@@ -65,11 +65,15 @@ const initNuxt = async () => {
 };
 
 /**
- * Nuxt prod files
+ * Nuxt production-only files
  */
 if (!isDev) {
 	router.use(
-		'/_nuxt',
+		'/new/_nuxt',
+		async (ctx, next) => {
+			ctx.path = ctx.path.replace(/^\/new\/_nuxt/, '/_nuxt');
+			await next();
+		},
 		koaStatic(resolve(__dirname, '../.output/public/'), {
 			index: false,
 			maxage: 31536000000,
@@ -83,7 +87,7 @@ if (!isDev) {
 /**
  * Nuxt routes and files.
  */
-router.get(/^\/(nuxt|_nuxt|__nuxt|__nuxt_devtools__)(\/.*)?$/, async (ctx) => {
+router.get(/^\/(new|nuxt|_nuxt|__nuxt|__nuxt_devtools__)(\/.*)?$/, async (ctx) => {
 	if (!nuxtRouteHandler) {
 		ctx.status = 404;
 		return;
